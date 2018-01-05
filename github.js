@@ -1,5 +1,16 @@
 const https = require('https');
 
+const setOptions = (path) => {
+  return options = {
+    hostname: 'api.github.com',
+    path: path,
+    headers: {
+      Accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'Node.JS-GitHub'
+    }
+  };
+};
+
 const sendRequest = (options, done) => {
   const req = https.get(options, res => {
     let body = '';
@@ -27,14 +38,8 @@ const sendRequest = (options, done) => {
 const getRepos = (userName, done) => {
   if (!userName) return done(new Error('Необходимо указать имя пользователя'));
 
-  const options = {
-    hostname: 'api.github.com',
-    path: `/users/${userName}/repos`,
-    headers: {
-      Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Node.JS-GitHub'
-    }
-  };
+  const path = `/users/${userName}/repos`;
+  const options = setOptions(path);
 
   sendRequest(options, done);
 };
@@ -42,14 +47,8 @@ const getRepos = (userName, done) => {
 const getCommits = (userName, repoName, done) => {
   if (!repoName) return done(new Error('Необходимо указать имя репозитория'));
 
-  const options = {
-    hostname: 'api.github.com',
-    path: `/repos/${userName}/${repoName}/commits`,
-    headers: {
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'Node.JS-GitHub'
-    }
-  };
+  const path = `/repos/${userName}/${repoName}/commits`;
+  const options = setOptions(path);
 
   sendRequest(options, done);
 };
