@@ -1,16 +1,6 @@
 const https = require('https');
 
-const getRepos = (userName, done) => {
-  if (!userName) return done(new Error('Необходимо указать имя пользователя'));
-
-  const options = {
-    hostname: 'api.github.com',
-    path: `/users/${userName}/repos`,
-    headers: {
-      'User-Agent': 'Node.JS-GitHub'
-    }
-  };
-
+const sendRequest = (options, done) => {
   const req = https.get(options, res => {
     let body = '';
 
@@ -29,12 +19,42 @@ const getRepos = (userName, done) => {
     } else {
       done(new Error(`Не удалось получить данные от сервера (${res.statusCode} ${res.statusMessage})`));
     }
-
   });
 
   req.on('error', error => done(new Error(`Не удалось отправить запрос (${error.message})`)));
 };
 
+const getRepos = (userName, done) => {
+  if (!userName) return done(new Error('Необходимо указать имя пользователя'));
+
+  const options = {
+    hostname: 'api.github.com',
+    path: `/users/${userName}/repos`,
+    headers: {
+      Accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'Node.JS-GitHub'
+    }
+  };
+
+  sendRequest(options, done);
+};
+
+const getCommits = (userName, repoName, done) => {
+  if (!repoName) return done(new Error('Необходимо указать имя репозитория'));
+
+  const options = {
+    hostname: 'api.github.com',
+    path: `/repos/${userName}/${repoName}/commits`,
+    headers: {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'Node.JS-GitHub'
+    }
+  };
+
+  sendRequest(options, done);
+};
+
 module.exports = {
-  getRepos
+  getRepos,
+  getCommits
 };
